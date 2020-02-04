@@ -22,16 +22,6 @@ app.get('/puntuaciones/', (req, res)=>{
             res.status(200).send({accion:'get all', datos: puntuaciones})
         }
     })
-    /*let datosJSON = {
-        accion:'get all',
-        datos: [
-            {nombre:'Pepe', puntuaciones: 33},
-            {nombre:'Bea', puntuaciones: 43},
-            {nombre:'Angel', puntuaciones: 54},
-            {nombre:'Isabel', puntuaciones: 23}
-        ]
-    }
-    res.status(200).send(datosJSON)*/
 })
 
 app.post('/puntuacion', (req, res)=> { 
@@ -47,37 +37,51 @@ app.post('/puntuacion', (req, res)=> {
             res.status(200).send({accion: 'save', datos:puntuacionGuardada})
         }
     })
-    //TODO: insertar en la base de datos
-    /*let datosJsonRespuesta = {
-        accion: 'save',
-        datos: datos
-    }
-    res.status(200).send(datosJsonRespuesta);*/
 })
 
 app.delete('/puntuacion/:id', (req, res) => {
     let puntuacionId = req.params.id;
     Puntuacion.findByIdAndDelete(puntuacionId, (err, puntuacionBorrada)=>{
         if(err){
-            res.status(500).send( {accion: 'delete', mensaje:'Error al borrar la puntuaicion'} )
-            if(!puntuacionBorrada){
+        res.status(500).send( {accion: 'delete', mensaje:'Error al borrar la puntuaicion'} )
+
+        }else if(!puntuacionBorrada){
                 res.status(404).send( {accion: 'delete', mensaje:'El id a borrar no existe'} )
-            }
+            
         }else{
             res.status(200).send({accion: 'delete', datos:puntuacionBorrada})
         }
     })
-    /*let datosJasonRespuesta = { 
-        accion: 'delete',
-        datos: puntuacionId
-    }
-    //Borrar datos de la base de datos
-    res.status(200).send(datosJasonRespuesta)*/
+})
+
+app.put('/puntuacion/:id', (req, res)=>{
+    var datos = req.body;
+    let puntuacionId = req.params.id;
+    Puntuacion.findByIdAndUpdate(puntuacionId, datos, (err, puntuacionActualizada)=>{
+        if(err){
+            res.status(500).send( {accion: 'update', mensaje:'Error al actualizar la puntuaicion'} )
+        }else if(!puntuacionActualizada){
+            res.status(404).send( {accion: 'update', mensaje:'El id a borrar no existe'} )
+        }else{
+            res.status(200).send({accion: 'delete', datos: puntuacionActualizada})
+        }
+    })
 })
 
 
+app.get('/puntuacion/:id', (req, res)=>{
+    let puntuacionId = req.params.id;
+    Puntuacion.findById(puntuacionId).exec( (err, puntuacion)=>{
+        if(err){
+            res.status(500).send({accion:'get one', mensaje:'error al obtener la puntuación'})
+        }else{
+            res.status(200).send({accion:'get one', datos: puntuacion})
+        }
+    })
+})
 
-mongoose.connect('mongodb://192.168.99.100:27017/scores', (err, res)=>{
+
+mongoose.connect('mongodb://192.168.99.100:27018/scores', (err, res)=>{
     if(err){
         console.log('Error al conectarme a la base de datos')
         throw err
