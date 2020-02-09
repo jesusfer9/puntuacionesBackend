@@ -41,6 +41,7 @@ async function getById( req, res){
 async function insert(req, res){
 
     const puntuacion =  new Puntuacion(req.body);
+    puntuacion._id = undefined;
     try{
         let puntuacionGuardada =  await puntuacion.save()
         res.status(200).send({accion: 'save', datos:puntuacionGuardada})
@@ -56,10 +57,11 @@ async function remove(req, res){
         let puntuacionId =  req.params.id;
         let puntuacionBorrada =  await Puntuacion.findByIdAndRemove(puntuacionId)
         if(!puntuacionBorrada){
-            res.status(404).send( {accion: 'delete', mensaje:'No existe el id a borrar'} )
-        }else{
-        res.status(200).send({accion: 'delete', datos:puntuacionBorrada})
+            return res.status(404).send( {accion: 'delete', mensaje:'No existe el id a borrar'} )
         }
+
+        res.status(200).send({accion: 'delete', datos:puntuacionBorrada})
+        
     } catch(err){
         res.status(500).send( {accion: 'delete', mensaje:'Error al borrar la puntuaicion'} )
     }
@@ -73,10 +75,11 @@ async function update(req, res){
         let puntuacionId =  req.params.id;
         let puntuacionActualizada =  await Puntuacion.findByIdAndUpdate(puntuacionId, datos)
         if(!puntuacionBorrada){
-            res.status(404).send( {accion: 'remove', mensaje:'No existe el id a actualizar'} )
-        }else{
-        res.status(200).send({accion: 'remove', datos: puntuacionActualizada})
+           return res.status(404).send( {accion: 'remove', mensaje:'No existe el id a actualizar'} )
         }
+
+        res.status(200).send({accion: 'remove', datos: puntuacionActualizada})
+        
     } catch(err){
         res.status(500).send( {accion: 'update', mensaje:'Error al actualizar la puntuaicion'} )
     }
